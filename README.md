@@ -1,4 +1,4 @@
-# Tech Challenge 4: Previsão de Preços de Ações com LSTM e MLflow
+# Tech Challenge 4: Previsão de Preços de Ações com LSTM
 
 ## Pós-Graduação em Machine Learning Engineering
 
