@@ -3,10 +3,10 @@
 ## Pós-Graduação em Machine Learning Engineering
 
 **Integrantes do Grupo:**
-* [Nome do Integrante 1]
-* [Nome do Integrante 2]
-* [Nome do Integrante 3]
-
+* [Gabriel ](https://github.com/GabrielHgA)
+* [Renan Mello](https://github.com/renanvmelo)
+* [Rodrigo Fernandes](https://github.com/rodrigodfernandes)
+* [Yuri T. de Barros](https://github.com/YuriTBarros)
 ---
 
 ### 1. Descrição do Problema
