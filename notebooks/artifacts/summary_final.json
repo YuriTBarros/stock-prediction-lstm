@@ -1,0 +1,27 @@
+{
+  "target": "close",
+  "features": [
+    "close",
+    "high",
+    "low",
+    "open",
+    "volume"
+  ],
+  "lookback": 40,
+  "arch": "lstm",
+  "lr": 0.001,
+  "hidden": 128,
+  "dropout": 0.2,
+  "scaler": "minmax",
+  "horizon": 1,
+  "epochs": 100,
+  "batch": 64,
+  "test_final": {
+    "MAE": 6.439180850982666,
+    "RMSE": 9.505464688680608,
+    "MAPE": 1.11744599416852
+  },
+  "model_final": "artifacts/best_model_final.keras",
+  "scaler_x_final": "artifacts/scaler_x_final.joblib",
+  "scaler_y_final": "artifacts/scaler_y_final.joblib"
+}
