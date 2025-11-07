@@ -1,0 +1,20 @@
+{
+  "features": [
+    "close"
+  ],
+  "lookback": 40,
+  "arch": "stacked",
+  "lr": 0.001,
+  "hidden": 128,
+  "dropout": 0.2,
+  "scaler": "minmax",
+  "horizon": 1,
+  "epochs": 100,
+  "batch": 64,
+  "val_MAE": 8.183371543884277,
+  "val_RMSE": 9.779802989262569,
+  "val_MAPE": 1.6115952283143997,
+  "test_MAE": 16.889856338500977,
+  "test_RMSE": 19.18749363802826,
+  "test_MAPE": 2.794608101248741
+}

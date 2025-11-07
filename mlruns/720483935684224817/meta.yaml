@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/720483935684224817
+creation_time: 1762516614892
+experiment_id: '720483935684224817'
+last_update_time: 1762516614892
+lifecycle_stage: active
+name: lstm-spy-grid

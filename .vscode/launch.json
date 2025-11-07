@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Retrain LSTM (local mlruns)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/retrain.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--ticker", "SPY",
+        "--data_path", "${workspaceFolder}/data/spy.parquet",
+        "--mlflow_uri", "file:./mlruns",
+        "--improve_delta", "0.02"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"  // <-- adiciona o root ao path
+      }
+    }
+  ]
+}
