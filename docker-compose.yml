@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-forecast-api
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - ./api:/app/api:rw,delegated
+      - ./notebooks/artifacts:/app/notebooks/artifacts:ro
+    command: >
+      uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
