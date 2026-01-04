@@ -1,0 +1,27 @@
+{
+  "features": [
+    "close",
+    "high",
+    "low",
+    "open",
+    "volume"
+  ],
+  "lookback": 40,
+  "arch": "lstm",
+  "lr": 0.001,
+  "hidden": 128,
+  "dropout": 0.2,
+  "scaler": "minmax",
+  "horizon": 1,
+  "epochs": 100,
+  "batch": 64,
+  "val_MAE": 4.852826118469238,
+  "val_RMSE": 6.489411459453614,
+  "val_MAPE": 0.9599922224879265,
+  "test_MAE": 8.784226417541504,
+  "test_RMSE": 11.089523498920297,
+  "test_MAPE": 1.4804101549088955,
+  "model": "artifacts/best_model.keras",
+  "scaler_x": "artifacts/scaler_x.joblib",
+  "scaler_y": "artifacts/scaler_y.joblib"
+}

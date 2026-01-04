@@ -1,0 +1,114 @@
+{
+  "name": "Treinamento Automatizado Semanal com Parâmetros Aleatórios",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "cronExpression", "expression": "0 2 * * 1"}]
+        }
+      },
+      "id": "schedule",
+      "name": "Toda Segunda 02:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://stock-forecast-api:8000/health",
+        "options": {}
+      },
+      "id": "health_check",
+      "name": "Verificar API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar parâmetros aleatórios para treinamento semanal (mais agressivo)\nconst epochs = Math.floor(Math.random() * (150 - 50 + 1)) + 50; // 50-150\nconst batch_size = [16, 32, 64][Math.floor(Math.random() * 3)]; // 16, 32 ou 64\nconst period = ['2y', '3y', '5y'][Math.floor(Math.random() * 3)]; // 2y, 3y ou 5y\nconst learning_rate = (Math.random() * (0.01 - 0.0001) + 0.0001).toFixed(4); // 0.0001-0.01\n\nreturn {\n  ticker: 'SPY',\n  epochs: epochs,\n  batch_size: batch_size,\n  period: period,\n  learning_rate: parseFloat(learning_rate)\n};"
+      },
+      "id": "generate_params",
+      "name": "Gerar Parâmetros Aleatórios",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://stock-forecast-api:8000/train",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"ticker\": \"SPY\", \"period\": \"2y\", \"epochs\": 100, \"batch_size\": 32}",
+        "options": {}
+      },
+      "id": "train",
+      "name": "Treinar Modelo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [910, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://stock-forecast-api:8000/health",
+        "options": {}
+      },
+      "id": "monitor_after_train",
+      "name": "Monitorar Após Treinamento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1386867187477647501/2-pt63KDsKh8qQ-Pi43VTncZnE06jqy6rojzDFErhFyVFXnoWn3pG9iR6rNa2Bv6B39t",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"embeds\": [{\"title\": \"✅ Treinamento Semanal Concluído!\", \"description\": \"Ticker: SPY\\nPeríodo: 2y\\nEpochs: 100\\nBatch Size: 32\\nLearning Rate: 0.005\\nAPI Status: OK\", \"color\": 65280}]}",
+        "options": {}
+      },
+      "id": "notify_success",
+      "name": "Notificar Sucesso",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1350, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1386867187477647501/2-pt63KDsKh8qQ-Pi43VTncZnE06jqy6rojzDFErhFyVFXnoWn3pG9iR6rNa2Bv6B39t",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"embeds\": [{\"title\": \"❌ Erro no Treinamento Semanal!\", \"description\": \"Ticker: SPY\\nErro: Falha ao treinar o modelo com parâmetros aleatórios\", \"color\": 16711680}]}",
+        "options": {}
+      },
+      "id": "notify_error",
+      "name": "Notificar Erro",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1350, 400]
+    }
+  ],
+  "connections": {
+    "Toda Segunda 02:00": {"main": [[{"node": "Verificar API"}]]},
+    "Verificar API": {"main": [[{"node": "Gerar Parâmetros Aleatórios"}]]},
+    "Gerar Parâmetros Aleatórios": {"main": [[{"node": "Treinar Modelo"}]]},
+    "Treinar Modelo": {
+      "main": [
+        [{"node": "Monitorar Após Treinamento"}],
+        [{"node": "Notificar Erro"}]
+      ]
+    },
+    "Monitorar Após Treinamento": {
+      "main": [[{"node": "Notificar Sucesso"}]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-03T21:00:00.000Z",
+  "versionId": "1"
+}

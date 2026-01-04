@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/720483935684224817/f546f15ad63e47cfbb96a9ba3e18f968/artifacts
+end_time: 1762518580359
+entry_point_name: ''
+experiment_id: '720483935684224817'
+lifecycle_stage: active
+run_id: f546f15ad63e47cfbb96a9ba3e18f968
+run_name: scenario_6
+run_uuid: f546f15ad63e47cfbb96a9ba3e18f968
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762518564915
+status: 3
+tags: []
+user_id: renanmelo

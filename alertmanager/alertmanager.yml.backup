@@ -1,0 +1,80 @@
+global:
+  resolve_timeout: 5m
+
+# Templates para as notificações
+templates:
+  - '/etc/alertmanager/*.tmpl'
+
+# Configuração de roteamento de alertas
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+  
+  routes:
+    # Alertas críticos
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+    
+    # Alertas de warning
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      continue: true
+    
+    # Alertas informativos
+    - match:
+        severity: info
+      receiver: 'info-alerts'
+
+# Configuração de receivers (canais de notificação)
+receivers:
+  # Receiver padrão (webhook genérico)
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://n8n:5678/webhook/alerts'
+        send_resolved: true
+
+  # Alertas críticos - podem ser enviados para múltiplos canais
+  - name: 'critical-alerts'
+    webhook_configs:
+      - url: 'http://n8n:5678/webhook/critical-alerts'
+        send_resolved: true
+    # Adicione aqui outras integrações como Slack, email, etc.
+    # slack_configs:
+    #   - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+    #     channel: '#mlops-critical'
+    #     title: 'Alerta Crítico MLOps'
+    #     text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+
+  # Alertas de warning
+  - name: 'warning-alerts'
+    webhook_configs:
+      - url: 'http://n8n:5678/webhook/warning-alerts'
+        send_resolved: true
+
+  # Alertas informativos
+  - name: 'info-alerts'
+    webhook_configs:
+      - url: 'http://n8n:5678/webhook/info-alerts'
+        send_resolved: true
+
+# Configuração de inibição (evitar alertas redundantes)
+inhibit_rules:
+  # Se a API está down, não alertar sobre latência
+  - source_match:
+      alertname: 'MLAPIDown'
+    target_match:
+      alertname: 'HighAPILatency'
+    equal: ['job']
+  
+  # Se há falha no treinamento, não alertar sobre degradação do modelo
+  - source_match:
+      alertname: 'TrainingFailed'
+    target_match:
+      alertname: 'ModelPerformanceDegradation'
+    equal: ['job']
