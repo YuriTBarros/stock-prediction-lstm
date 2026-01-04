@@ -1,0 +1,7 @@
+FROM postgres:16-alpine
+
+# Copiar script de inicialização
+COPY scripts/init-db.sql /docker-entrypoint-initdb.d/
+
+# O PostgreSQL executará automaticamente todos os scripts em /docker-entrypoint-initdb.d/
+# na primeira inicialização do banco

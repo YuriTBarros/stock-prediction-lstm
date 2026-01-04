@@ -1,0 +1,83 @@
+global:
+  resolve_timeout: 5m
+
+# Configuração de roteamento de alertas
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'discord-notifications'
+  
+  routes:
+    # Alertas críticos - enviados para Discord
+    - match:
+        severity: critical
+      receiver: 'discord-critical'
+      continue: false
+    
+    # Alertas de warning - enviados para Discord
+    - match:
+        severity: warning
+      receiver: 'discord-warning'
+      continue: false
+    
+    # Alertas informativos - enviados para Discord
+    - match:
+        severity: info
+      receiver: 'discord-info'
+      continue: false
+
+# Configuração de receivers (canais de notificação)
+receivers:
+  # Receiver padrão - Discord genérico
+  - name: 'discord-notifications'
+    webhook_configs:
+      - url: 'http://discord-webhook-proxy:9094/webhook'
+        send_resolved: true
+        http_config:
+          follow_redirects: true
+        max_alerts: 0
+
+  # Alertas críticos - Discord
+  - name: 'discord-critical'
+    webhook_configs:
+      - url: 'http://discord-webhook-proxy:9094/webhook'
+        send_resolved: true
+        http_config:
+          follow_redirects: true
+        max_alerts: 0
+
+  # Alertas de warning - Discord
+  - name: 'discord-warning'
+    webhook_configs:
+      - url: 'http://discord-webhook-proxy:9094/webhook'
+        send_resolved: true
+        http_config:
+          follow_redirects: true
+        max_alerts: 0
+
+  # Alertas informativos - Discord
+  - name: 'discord-info'
+    webhook_configs:
+      - url: 'http://discord-webhook-proxy:9094/webhook'
+        send_resolved: true
+        http_config:
+          follow_redirects: true
+        max_alerts: 0
+
+# Configuração de inibição (evitar alertas redundantes)
+inhibit_rules:
+  # Se a API está down, não alertar sobre latência
+  - source_match:
+      alertname: 'MLAPIDown'
+    target_match:
+      alertname: 'HighAPILatency'
+    equal: ['job']
+  
+  # Se há falha no treinamento, não alertar sobre degradação do modelo
+  - source_match:
+      alertname: 'TrainingFailed'
+    target_match:
+      alertname: 'ModelPerformanceDegradation'
+    equal: ['job']

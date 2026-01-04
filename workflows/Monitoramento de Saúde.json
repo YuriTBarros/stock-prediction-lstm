@@ -1,0 +1,157 @@
+{
+  "name": "Monitoramento de Saúde",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "minutes", "value": 5}]
+        }
+      },
+      "id": "schedule",
+      "name": "A cada 5 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://stock-forecast-api:8000/health",
+        "options": {"timeout": 5000}
+      },
+      "id": "health_check",
+      "name": "Verificar API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [224, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.status}}",
+              "value2": "healthy",
+              "operation": "notEquals"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "check_health",
+      "name": "API não saudável?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [464, -96]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "message",
+              "value": "⚠️ Alerta de Saúde da API!",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "description",
+              "value": "Status: API com problemas",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "color",
+              "value": 16776960,
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "id": "prepare_problem",
+      "name": "Preparar Mensagem Problema",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [600, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1386867187477647501/2-pt63KDsKh8qQ-Pi43VTncZnE06jqy6rojzDFErhFyVFXnoWn3pG9iR6rNa2Bv6B39t",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"embeds\": [{\"title\": \"{{$json.message}}\", \"description\": \"{{$json.description}}\", \"color\": {{$json.color}}}]}",
+        "options": {}
+      },
+      "id": "notify_problem",
+      "name": "Notificar Problema",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "message",
+              "value": "❌ API Fora do Ar!",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "description",
+              "value": "A API não está respondendo",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "color",
+              "value": 16711680,
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "id": "prepare_error",
+      "name": "Preparar Mensagem Erro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [480, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1386867187477647501/2-pt63KDsKh8qQ-Pi43VTncZnE06jqy6rojzDFErhFyVFXnoWn3pG9iR6rNa2Bv6B39t",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"embeds\": [{\"title\": \"{{$json.message}}\", \"description\": \"{{$json.description}}\", \"color\": {{$json.color}}}]}",
+        "options": {}
+      },
+      "id": "notify_error",
+      "name": "Notificar Erro de Conexão",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 240]
+    }
+  ],
+  "connections": {
+    "A cada 5 minutos": {"main": [[{"node": "Verificar API"}]]},
+    "Verificar API": {
+      "main": [
+        [{"node": "API não saudável?"}],
+        [{"node": "Preparar Mensagem Erro"}]
+      ]
+    },
+    "API não saudável?": {"main": [[{"node": "Preparar Mensagem Problema"}]]},
+    "Preparar Mensagem Problema": {"main": [[{"node": "Notificar Problema"}]]},
+    "Preparar Mensagem Erro": {"main": [[{"node": "Notificar Erro de Conexão"}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-03T21:00:00.000Z",
+  "versionId": "1"
+}

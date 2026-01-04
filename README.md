@@ -753,4 +753,3 @@ curl -X POST http://localhost:8000/predict \
 # n8n: http://localhost:5678
 ```
 
-**Pronto! O sistema está funcionando.** 🎉
